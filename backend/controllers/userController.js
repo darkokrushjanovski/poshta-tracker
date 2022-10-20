@@ -1,11 +1,14 @@
 const asyncHandler = require("express-async-handler");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-
 const User = require("../models/userModel");
 
 const registerUser = asyncHandler(async (req, res) => {
   const { username, password } = req.body;
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Methods", "POST");
+  res.header("Access-Control-Allow-Headers", "accept, content-type");
+  res.header("Access-Control-Max-Age", "1728000");
   //Validation
   if (!username || !password) {
     res.status(400);
