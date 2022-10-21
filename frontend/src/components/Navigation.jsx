@@ -20,12 +20,11 @@ function Navigation() {
       <Container>
         <Navbar.Brand>Poshta Tracker</Navbar.Brand>
         <Nav className="mr-auto">
-          if(user)
-          {
+          {user && (
             <Button variant="secondary" onClick={onClick}>
               Log out
             </Button>
-          }
+          )}
         </Nav>
       </Container>
     </Navbar>
