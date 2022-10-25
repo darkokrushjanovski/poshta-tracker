@@ -7,6 +7,7 @@ function Navigation() {
 
   const [user, setUser] = useState();
 
+ 
   useEffect(() => {
     setUser(localStorage.getItem("user"));
   }, [user]);
