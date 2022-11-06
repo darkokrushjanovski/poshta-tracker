@@ -5,10 +5,6 @@ const User = require("../models/userModel");
 
 const registerUser = asyncHandler(async (req, res) => {
   const { username, password } = req.body;
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Methods", "POST");
-  res.header("Access-Control-Allow-Headers", "accept, content-type");
-  res.header("Access-Control-Max-Age", "1728000");
   //Validation
   if (!username || !password) {
     res.status(400);
@@ -45,12 +41,6 @@ const registerUser = asyncHandler(async (req, res) => {
   }
 });
 
-const generateToken = (id) => {
-  return jwt.sign({ id }, process.env.JWT_SECRET, {
-    expiresIn: "30d",
-  });
-};
-
 const loginUser = asyncHandler(async (req, res) => {
   const { username, password } = req.body;
 
@@ -68,7 +58,18 @@ const loginUser = asyncHandler(async (req, res) => {
   }
 });
 
+const getCurrentUser = (req, res) => {
+  res.json(req.user);
+};
+
+const generateToken = (id) => {
+  return jwt.sign({ id }, process.env.JWT_SECRET, {
+    expiresIn: "30d",
+  });
+};
+
 module.exports = {
   registerUser,
   loginUser,
+  getCurrentUser,
 };

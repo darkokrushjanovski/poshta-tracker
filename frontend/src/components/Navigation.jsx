@@ -1,28 +1,30 @@
 import { Navbar, Nav, Container, Button } from "react-bootstrap";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { logout } from "../features/auth/authSlice";
 
 function Navigation() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
-  const [user, setUser] = useState();
+  const { user } = useSelector((store) => store.auth);
 
- 
-  useEffect(() => {
-    setUser(localStorage.getItem("user"));
-  }, [user]);
-
-  const onClick = () => {
-    localStorage.removeItem("user");
-    navigate("/");
-  };
   return (
     <Navbar fixed="top" bg="primary" variant="dark">
       <Container>
-        <Navbar.Brand>Poshta Tracker</Navbar.Brand>
+        <Link to="/">
+          <Navbar.Brand>Poshta Tracker</Navbar.Brand>
+        </Link>
         <Nav className="mr-auto">
           {user && (
-            <Button variant="secondary" onClick={onClick}>
+            <Button
+              variant="secondary"
+              onClick={() => {
+                dispatch(logout());
+                navigate("/");
+              }}
+            >
               Log out
             </Button>
           )}

@@ -10,10 +10,13 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-app.get("/", (req, res) => {});
+app.get("/", (req, res) => {
+  res.json({ message: "Hello" });
+});
 
 //Routes
 app.use("/api/users", require("./routes/userRoutes"));
+app.use("/api/packages", require("./routes/packageRoutes"));
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);

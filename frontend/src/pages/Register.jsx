@@ -1,27 +1,46 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Container, Card, Form, Button } from "react-bootstrap";
-import axios from "axios";
+import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { useSelector, useDispatch } from "react-redux";
+import { reset, register } from "../features/auth/authSlice";
 
-function Register() {
+function Home() {
   const [formData, setFormData] = useState({
     username: "",
     password: "",
   });
 
+  const { user, isError, isSuccess, message } = useSelector(
+    (store) => store.auth
+  );
+
   const { username, password } = formData;
+
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (isError) {
+      toast.error(message);
+    }
+
+    // Reditect when logged in
+    if (isSuccess || user) {
+      navigate("/");
+    }
+
+    dispatch(reset);
+  }, [isError, isSuccess, user, message, navigate, dispatch]);
+
   const onSubmit = (e) => {
     e.preventDefault();
-    const url = "http://localhost:5000/api/users";
-
-    axios
-      .post(url, formData)
-      .then(function (response) {
-        toast.success("Registered");
-      })
-      .catch(function (error) {
-        console.log(error);
-      });
+    const userData = {
+      username,
+      password,
+    };
+    dispatch(register(userData));
+    dispatch(reset());
   };
 
   const onChange = (e) => {
@@ -41,7 +60,7 @@ function Register() {
         className="text-center d-flex p-2"
         style={{ width: "30rem" }}
       >
-        <Card.Text className="text-white">Register</Card.Text>
+        <Card.Text className="">Register</Card.Text>
         <Form onSubmit={onSubmit}>
           <Form.Group className="mb-3 " controlId="formBasicEmail">
             <Form.Label className="d-flex text-white">Username</Form.Label>
@@ -65,7 +84,11 @@ function Register() {
               required
             />
           </Form.Group>
-
+          <Link to="/register">
+            <Form.Label className="d-flex text-info">
+              Don't have an account? Register here!
+            </Form.Label>
+          </Link>
           <Button variant="secondary" type="submit">
             Submit
           </Button>
@@ -75,4 +98,4 @@ function Register() {
   );
 }
 
-export default Register;
+export default Home;
