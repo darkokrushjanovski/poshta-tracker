@@ -1,24 +1,35 @@
 import { Card, Button, Col, Row } from "react-bootstrap";
-import { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { getPackageByNumber, reset } from "../features/packages/packageSlice";
+import {
+  getPackageByNumber,
+  reset,
+  updateCurrentPackage,
+  deletePackage,
+  getPackages,
+} from "../features/packages/packageSlice";
 import SpinnerComponent from "../components/SpinnerComponent";
 
 const PackageItem = ({ packageItem }) => {
-  const { packageDetails, isLoading, isError, isSuccess } = useSelector(
-    (store) => store.packages
-  );
+  const { packageDetails, isLoading, isError, isSuccess, currentPackage } =
+    useSelector((store) => store.packages);
   const dispatch = useDispatch();
 
-  const [loading, setLoading] = useState(false);
-
   const onClick = () => {
-    dispatch(getPackageByNumber(packageItem.trackingNumber));
-    setLoading(true);
+    console.log(packageItem);
+    dispatch(updateCurrentPackage(packageItem._id));
+  };
+
+  const deletePackageItem = () => {
+    dispatch(
+      deletePackage({
+        packageId: packageItem._id,
+        onDelete: () => dispatch(getPackages()),
+      })
+    );
   };
 
   return (
-    <Card border="secondary m-2" className="pb-5">
+    <Card border="secondary m-2" className="pb-5" style={{}}>
       <Card.Body>
         <Card.Title className="text-center fw-bold">
           {packageItem.name}
@@ -33,13 +44,13 @@ const PackageItem = ({ packageItem }) => {
           </Button>
         </Col>
         <Col>
-          <Button size="lg" variant="secondary">
+          <Button size="lg" variant="secondary" onClick={deletePackageItem}>
             Delete
           </Button>
         </Col>
       </Row>
       <Row>
-        <Col>{packageItem.isLoading && <SpinnerComponent />}</Col>
+        <Col>{currentPackage === packageItem._id && <SpinnerComponent />}</Col>
       </Row>
     </Card>
   );

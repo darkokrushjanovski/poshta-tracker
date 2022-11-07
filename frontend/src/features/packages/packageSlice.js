@@ -4,6 +4,7 @@ import packageService from "./packageService";
 const initialState = {
   packageItems: [],
   packageDetails: [],
+  currentPackage: "",
   isError: false,
   isSuccess: false,
   isLoading: false,
@@ -72,6 +73,29 @@ export const getPackages = createAsyncThunk(
   }
 );
 
+// Delete a package
+export const deletePackage = createAsyncThunk(
+  "package/deletePackage",
+  async ({ packageId, onDelete }, thunkAPI) => {
+    const token = thunkAPI.getState().auth.user.token;
+
+    try {
+      const results = await packageService.deletePackage(packageId, token);
+      onDelete();
+      return results;
+    } catch (error) {
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString();
+
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+
 const packagesSlice = createSlice({
   name: "packages",
   initialState,
@@ -81,6 +105,9 @@ const packagesSlice = createSlice({
       state.isError = false;
       state.isSuccess = false;
       state.message = "";
+    },
+    updateCurrentPackage(state, action) {
+      state.currentPackage = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -110,8 +137,8 @@ const packagesSlice = createSlice({
         state.isError = true;
         state.message = action.payload;
       })
-      .addCase(getPackageByNumber.pending, (state) => {
-        // state.packageItems.filter(packageItem)
+      .addCase(getPackageByNumber.pending, (state, action) => {
+        state.currentPackage = action.payload;
         state.isLoading = true;
       })
       .addCase(getPackageByNumber.fulfilled, (state, action) => {
@@ -123,10 +150,21 @@ const packagesSlice = createSlice({
         state.isLoading = false;
         state.isError = true;
         state.message = action.payload;
+      })
+      .addCase(deletePackage.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(deletePackage.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+        state.message = action.payload;
+      })
+      .addCase(deletePackage.rejected, (state, action) => {
+        state.message = action.payload;
       });
   },
 });
 
-export const { reset } = packagesSlice.actions;
+export const { reset, updateCurrentPackage } = packagesSlice.actions;
 
 export default packagesSlice.reducer;

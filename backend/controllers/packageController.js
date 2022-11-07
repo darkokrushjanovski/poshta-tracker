@@ -32,9 +32,10 @@ const getPackageByNumber = asyncHandler(async (req, res) => {
   const response = await axios.get(
     `https://posta.com.mk/tnt/api/query?id=${req.params.id}`
   );
-  parseString(response.data, function (err, result) {
-    res.status(200).send(result);
-  });
+  // parseString(response.data, function (err, result) {
+  //   res.status(200).json(result);
+  // });
+  res.status(200).send(response);
 });
 
 const getPackages = asyncHandler(async (req, res) => {
@@ -51,4 +52,32 @@ const getPackages = asyncHandler(async (req, res) => {
   res.status(200).json(packages);
 });
 
-module.exports = { createPackage, getPackages, getPackageByNumber };
+const deletePackage = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.user.id);
+
+  if (!user) {
+    res.status(401);
+    throw new Error("User not found");
+  }
+  const package = await Package.findById(req.params.id);
+
+  if (!package) {
+    res.status(404);
+    throw new Error("Package not found");
+  }
+
+  if (package.user.toString() !== req.user.id) {
+    res.status(401);
+    throw new Error("Not Authorized");
+  }
+  await package.remove();
+
+  res.status(200).json({ success: true });
+});
+
+module.exports = {
+  createPackage,
+  getPackages,
+  getPackageByNumber,
+  deletePackage,
+};

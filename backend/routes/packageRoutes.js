@@ -5,9 +5,10 @@ const {
   createPackage,
   getPackages,
   getPackageByNumber,
+  deletePackage,
 } = require("../controllers/packageController");
 
 router.post("/", protect, createPackage).get("/", protect, getPackages);
-router.get("/:id", getPackageByNumber);
+router.get("/:id", getPackageByNumber).delete("/:id", protect, deletePackage);
 
 module.exports = router;
