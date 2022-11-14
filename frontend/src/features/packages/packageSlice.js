@@ -9,7 +9,6 @@ const initialState = {
   isSuccess: false,
   isLoading: false,
   message: "",
-  trackingNumber: "",
 };
 
 export const createPackage = createAsyncThunk(
@@ -138,18 +137,19 @@ const packagesSlice = createSlice({
         state.message = action.payload;
       })
       .addCase(getPackageByNumber.pending, (state, action) => {
-        state.currentPackage = action.payload;
         state.isLoading = true;
       })
       .addCase(getPackageByNumber.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isSuccess = true;
         state.packageDetails = action.payload;
+        state.currentPackage = "";
       })
       .addCase(getPackageByNumber.rejected, (state, action) => {
         state.isLoading = false;
         state.isError = true;
         state.message = action.payload;
+        state.isSuccess = false;
       })
       .addCase(deletePackage.pending, (state) => {
         state.isLoading = true;

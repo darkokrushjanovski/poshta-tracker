@@ -2,7 +2,6 @@ const asyncHandler = require("express-async-handler");
 const User = require("../models/userModel");
 const Package = require("../models/packageModel");
 const axios = require("axios");
-const parseString = require("xml2js").parseString;
 
 // Creating a package by user
 const createPackage = asyncHandler(async (req, res) => {
@@ -11,6 +10,14 @@ const createPackage = asyncHandler(async (req, res) => {
     res.status(400);
     throw new Error("Please add a pruduct and description");
   }
+
+  const packageExists = await Package.findOne({ trackingNumber });
+
+  if (packageExists) {
+    res.status(400);
+    throw new Error("Package Already Exists");
+  }
+
   // Get user using the id in the JWT
   const user = await User.findById(req.user.id);
 
@@ -30,16 +37,17 @@ const createPackage = asyncHandler(async (req, res) => {
 // Get Package by Tracking Number
 const getPackageByNumber = asyncHandler(async (req, res) => {
   const response = await axios.get(
-    `https://posta.com.mk/tnt/api/query?id=${req.params.id}`
+    `https://www.posta.com.mk/api/api.php/shipment?code=${req.params.id}`
   );
-  // parseString(response.data, function (err, result) {
-  //   res.status(200).json(result);
-  // });
-  res.status(200).send(response);
+  console.log(response.data);
+
+  res
+    .status(200)
+    .json({ currentPackage: req.params.id, details: response.data });
 });
 
+// Get user using the id in the JWT
 const getPackages = asyncHandler(async (req, res) => {
-  // Get user using the id in the JWT
   const user = await User.findById(req.user.id);
 
   if (!user) {

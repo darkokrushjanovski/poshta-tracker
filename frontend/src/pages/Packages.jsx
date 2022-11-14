@@ -47,13 +47,7 @@ function Packages() {
             </Col>
           ))}
         </Row>
-        {isLoading && (
-          <Row>
-            <Col>
-              <SpinnerComponent />
-            </Col>
-          </Row>
-        )}
+
         <Button variant="secondary" className="mt-5" onClick={goToCreateTicket}>
           Create new Package
         </Button>

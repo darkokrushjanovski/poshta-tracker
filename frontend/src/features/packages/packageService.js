@@ -29,9 +29,7 @@ const getPackages = async (token) => {
 
 // Get package status
 const getPackageByNumber = async (trackingNumber) => {
-  const response = await axios.get(`${API_URL}${trackingNumber}`, {
-    timeout: 5000,
-  });
+  const response = await axios.get(`${API_URL}${trackingNumber}`);
   return response.data;
 };
 

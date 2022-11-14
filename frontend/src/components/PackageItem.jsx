@@ -1,4 +1,4 @@
-import { Card, Button, Col, Row } from "react-bootstrap";
+import { Card, Button, Col, Row, Table } from "react-bootstrap";
 import { useSelector, useDispatch } from "react-redux";
 import {
   getPackageByNumber,
@@ -8,15 +8,16 @@ import {
   getPackages,
 } from "../features/packages/packageSlice";
 import SpinnerComponent from "../components/SpinnerComponent";
+import PackageDetails from "./PackageDetails";
 
 const PackageItem = ({ packageItem }) => {
-  const { packageDetails, isLoading, isError, isSuccess, currentPackage } =
+  const { isLoading, isError, isSuccess, currentPackage, packageDetails } =
     useSelector((store) => store.packages);
   const dispatch = useDispatch();
 
   const onClick = () => {
-    console.log(packageItem);
-    dispatch(updateCurrentPackage(packageItem._id));
+    dispatch(updateCurrentPackage(packageItem.trackingNumber));
+    dispatch(getPackageByNumber(packageItem.trackingNumber));
   };
 
   const deletePackageItem = () => {
@@ -50,7 +51,20 @@ const PackageItem = ({ packageItem }) => {
         </Col>
       </Row>
       <Row>
-        <Col>{currentPackage === packageItem._id && <SpinnerComponent />}</Col>
+        <Col>
+          {currentPackage === packageItem.trackingNumber && (
+            <SpinnerComponent />
+          )}
+        </Col>
+      </Row>
+
+      <Row className="p-3">
+        {packageDetails.currentPackage === packageItem.trackingNumber &&
+          packageDetails.details.map((packageDetail) => (
+            <Col className="text-center">
+              <PackageDetails packageDetail={packageDetail} />
+            </Col>
+          ))}
       </Row>
     </Card>
   );
